@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_delivery_order_listing_tree" model="ir.ui.view">
+        <field name="name">delivery.order.listing.tree</field>
+        <field name="model">delivery.order.listing</field>
+        <field name="arch" type="xml">
+            <tree string="Delivery lists">
+                <field name="name"/>
+                <field name="delivery_vendor_id"/>
+                <field name="delivery_date"/>
+                <field name="shipment_from_id"/>
+                <field name="shipment_to_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_delivery_order_listing_form" model="ir.ui.view">
+        <field name="name">delivery.order.listing.form</field>
+        <field name="model">delivery.order.listing</field>
+        <field name="arch" type="xml">
+            <form string="Delivery Lists">
+                <field name="company_id" invisible="1"/>
+                <field name="invoice_ids" invisible="1"/>
+                <field name="invoice_count" invisible="1"/>
+                <header>
+                    <button id="create_invoice_first" name="%(susanti_vendor_portal.action_delivery_multi_invoice)d" 
+                            class="oe_highlight" string="Create Bill" type="action" attrs="{'invisible': ['|',('invoice_count', '!=', 0),('state','=','draft')]}"/>
+                    <button id="create_invoice_second" name="%(susanti_vendor_portal.action_delivery_multi_invoice)d" 
+                            string="Create Bill" type="action" attrs="{'invisible': ['|',('invoice_count', '=', 0), ('state','=','draft')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoice" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('invoice_count', '=', 0)]}">
+                            <field name="invoice_count" widget="statinfo" string="Vendor Bills"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <span class="o_form_label">Reference</span>
+                        <h1 class="d-flex">
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="general_info">
+                            <field name="partner_id" widget="res_partner_many2one" 
+                                context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" 
+                                options="{'always_reload': True}"/>
+                            <field name="delivery_vendor_id"/>
+                            <field name="shipment_from_id"/>
+                            <field name="shipment_to_id"/>
+                        </group>
+                        <group>
+                            <field name="request_date"/>
+                            <field name="delivery_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Product Details" name="product_details">
+                            <field name="delivery_lines">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="product_uom_id"/>
+                                    <field name="company_id" invisible="1"/>
+                                    <field name="product_uom_category_id" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Note" name="note">
+                            <field name="note" string="Note" placeholder="Add an internal note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_delivery_order_listing" model="ir.actions.act_window">
+        <field name="name">Delivery Lists</field>
+        <field name="res_model">delivery.order.listing</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="domain">[('state', '!=', 'draft')]</field>
+    </record>
+
+    <record id="action_delivery_order_planning" model="ir.actions.act_window">
+        <field name="name">Delivery Planning</field>
+        <field name="res_model">delivery.order.listing</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="domain">[('state', '=', 'draft')]</field>
+    </record>
+
+    <menuitem id="delivery_planning_inventory" name="Delivery Planning" 
+        parent="susanti_vendor_portal.bion_vendor_portal_operations_menu" 
+        sequence="10" 
+        action="action_delivery_order_planning" 
+        groups="stock.group_stock_manager,stock.group_stock_user"/>
+
+    <menuitem id="delivery_lists_inventory" name="Delivery Lists" 
+        parent="susanti_vendor_portal.bion_vendor_portal_operations_menu" 
+        sequence="20" 
+        action="action_delivery_order_listing" 
+        groups="stock.group_stock_manager,stock.group_stock_user"/>
+    
+    <menuitem id="delivery_planning" name="Delivery Planning" 
+        parent="susanti_vendor_portal.sale_delivery_menu" 
+        sequence="200" 
+        action="action_delivery_order_planning" 
+        groups="stock.group_stock_manager,stock.group_stock_user"/>
+
+    <menuitem id="delivery_lists" name="Delivery Lists" 
+        parent="susanti_vendor_portal.sale_delivery_menu" 
+        sequence="300" 
+        action="action_delivery_order_listing" 
+        groups="stock.group_stock_manager,stock.group_stock_user"/>
+
+        
+
+</odoo>

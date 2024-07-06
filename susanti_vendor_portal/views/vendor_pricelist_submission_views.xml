@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_vendor_pricelist_submission_tree" model="ir.ui.view">
+        <field name="name">vendor.pricelist.submission.tree</field>
+        <field name="model">vendor.pricelist.submission</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="state== 'draft'" decoration-muted="state == 'expired'" decoration-danger="state =='reject'">
+                <field name="name" decoration-bf="1"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="state" widget="badge"
+                    decoration-info="state=='draft'" 
+                    decoration-muted="state =='expired'" 
+                    decoration-success="state =='accepted'"
+                    decoration-danger="state =='reject'"
+                    decoration-warning="state =='submit'"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_vendor_pricelist_submission_form" model="ir.ui.view">
+        <field name="name">vendor.pricelist.submission.form</field>
+        <field name="model">vendor.pricelist.submission</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,accepted"/>
+                </header>
+                <sheet>
+                    <label for="name"/>
+                    <div class='row col-4'>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="pricelist_items" string="Pricelist Items">
+                            <field name="product_supplier_info_line"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="activity_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_vendor_pricelist_submission" model="ir.actions.act_window">
+        <field name="name">Vendor Pricelist Submissions</field>
+        <field name="res_model">vendor.pricelist.submission</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_vendor_pricelist_submission" name="Vendor Pricelist Submissions" 
+            action="action_vendor_pricelist_submission" 
+            parent="susanti_vendor_portal.bion_vendor_portal_operations_menu"
+            sequence="500"/>
+</odoo>

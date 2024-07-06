@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!--    Logistics Menus-->
+    <menuitem
+            id="bion_vendor_portal_menu_root"
+            name="Logistics"
+            groups="base.group_user"
+            web_icon="vendor_portal_odoo,static/description/icon.png"
+            sequence="6"/>
+
+    <menuitem
+            id="bion_vendor_portal_operations_menu"
+            name="Operations"
+            parent="bion_vendor_portal_menu_root"
+            groups="base.group_user"
+            sequence="1"/>
+
+    <menuitem
+            id="bion_vendor_price_submission_portal_menu"
+            name="Vendor Pricelist"
+            action="product.product_supplierinfo_type_action"
+            parent="susanti_vendor_portal.bion_vendor_portal_operations_menu"
+            sequence="500"/>
+
+
+    <menuitem
+            id="bion_vendor_portal_config_menu"
+            name="Configuration"
+            parent="bion_vendor_portal_menu_root"
+            sequence="10"/>
+
+    
+
+
+</odoo>

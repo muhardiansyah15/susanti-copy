@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="susanti_portal_my_details_inherit" inherit_id="portal.portal_my_details">
+        <xpath expr="//input[@name='redirect']" position="before">
+            <div class="clearfix"/>
+            <div class="upload_attachment">
+                <button id="btnShowModal" style="width: 50%; margin-top: 1cm;" class="btn btn-primary">
+                    Upload your NPWP/Company Document/Company Profile
+                </button>
+                <div id="vendorScreenBtnShowAttachment" style="width:50%; margin-top: 0.5cm; color:#276e72; cursor:pointer;">
+                    <i class="fa fa-arrow-right"/> Show Attachments
+                </div>
+                <div id="updated_attachment" style="width:50%; display:none">
+                    <p style="text-align: end;">
+                        <i class="fa fa-refresh" id="refresh_vendor_attachment"/>
+                    </p>
+                    <div id="showing_updated_vendor_attachment" style="width:100%;"/>
+                </div>
+
+                <div id="myAttachmentModal" class="modal modal-attachment">
+                    <div class="modal-content modal-content-upload-attachment">
+                        <form method="post">
+                            <div class="modal-header modal-attachment-header">
+                                <h5>Upload Attachments</h5>
+                                <span class="close_modal">
+                                    <i class="fa fa-times-circle"/>
+                                </span>
+                            </div>
+                            <div class="modal-body modal-attachment-body">
+                                <p>Please upload your attachments.</p>
+                            </div>
+                            <div class="modal-footer modal-attachment-footer">
+                                
+                                <input type="file" name="file"
+                                    id="attachment_proof"
+                                    multiple="true"
+                                    data-show-upload="true"
+                                    data-show-caption="true"
+                                    accept="image/png,image/jpeg,application/pdf"/>
+                                <button id="attachment_proof_update"
+                                        t-att-value="partner.id">Save
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="susanti_portal_my_details_fields_inherit" inherit_id="portal.portal_my_details_fields">
+        <xpath expr="//div[7]" position="after">
+            <div class="clearfix"/>
+            <div t-attf-class="mb-1 #{error.get('l10n_id_nik') and 'o_has_error' or ''} col-xl-6">
+                <label class="col-form-label label-optional" for="l10n_id_nik">NPWP</label>
+                <input type="text" name="l10n_id_nik" 
+                    t-attf-class="form-control #{error.get('l10n_id_nik') and 'is-invalid' or ''}" 
+                    t-att-value="l10n_id_nik or partner.l10n_id_nik" t-att-disabled="None if partner_can_edit_vat else '1'" />
+            </div>
+        </xpath>
+    </template>
+
+    <template id="portal_breadcrumbs_vendor_pricelist_items" name="Portal layout : Vendor PriceList Submissions" inherit_id="portal.portal_breadcrumbs" priority="30">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'vendor_pricelist_submissions'" t-attf-class="breadcrumb-item #{'active ' if not submission else ''}">
+                <a t-if="submission" t-attf-href="/my/price-submissions?{{ keep_query() }}">Vendor Pricelist Items</a>
+                <t t-else="">Vendor Pricelist Subimissions</t>
+            </li>
+
+            <li t-if="submission" class="breadcrumb-item active">
+                <t t-esc="submission.name" t-if="submission.name"/>
+            </li>
+
+            <li t-if="page_name == 'vendor_pricelist'" t-attf-class="breadcrumb-item #{'active ' if not pricelist else ''}">
+                <a t-if="pricelist" t-attf-href="/my/price-submission/items?{{ keep_query() }}">Vendor Pricelist Items</a>
+                <t t-else="">Vendor Pricelist Items</t>
+            </li>
+            <li t-if="pricelist" class="breadcrumb-item active">
+                <t t-esc="pricelist.product_name" t-if="pricelist.product_name"/>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="portal_my_home_vendor_pricelist_submission" name="Vendor Price Submission Portal" customize_show="True" inherit_id="portal.portal_my_home" priority="30">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Vendor Pricelist Submissions</t>
+                <!-- <t t-set="url" t-value="'/my/price-submissions'"/> -->
+                <t t-set="url" t-value="'/web#model=vendor.pricelist.submission&amp;view_type=list'"/>
+                <t t-set="placeholder_count" t-value="'submission_count'"/>
+            </t>
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Vendor Pricelist Items</t>
+                <t t-set="url" t-value="'/my/price-submission/items'"/>
+                <t t-set="placeholder_count" t-value="'pricelist_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_my_project" name="My Project">
+        <t t-call="portal.portal_layout">
+            <t t-set="o_portal_fullwidth_alert">
+                <t t-call="portal.portal_back_in_edit_mode">
+                    <t t-set="backend_url" t-value="'/web#model=project.project&amp;id=%s&amp;view_type=kanban' % (project.id)"/>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    
+
+    <template id="portal_my_price_submissions" name="My Price Submission">
+        <t t-call="portal.portal_layout">
+            <t t-set="o_portal_fullwidth_alert">
+                <t t-call="portal.portal_back_in_edit_mode">
+                    <t t-set="backend_url" t-value="'/web#model=vendor.pricelist.submission&amp;view_type=list'"/>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="portal_my_price_submissions1111" name="My Price Submission">
+        <t t-call="portal.portal_layout">
+
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Vendor Pricelist Submissions</t>
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            </t>
+            <t t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th colspan="7">
+                            <a title="New" aria-label="New" class="btn btn-sm btn-primary btn-new-pricelistitem" role="button">
+                                <i class="fa fa-plus"/><span class='d-none d-md-inline'> New</span>
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+            </t>
+            <t t-if="not submissions">
+                <div class="alert alert-warning mt8" role="alert">
+                    There are no pricelists.
+                </div>
+            </t>
+
+            <t t-if="submissions" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th><span class='d-none d-md-inline'>Reference</span></th>
+                        <th><span class='d-none d-md-inline'>Create Date</span></th>
+                        <th class="text-center"><span class='d-none d-md-inline'>Start Date</span></th>
+                        <th class="text-center"><span class='d-none d-md-inline'>End Date</span></th>
+                        <th class="text-center"/>
+                    </tr>
+                </thead>
+                <t t-foreach="submissions" t-as="submission">
+                    <tr>
+                        <td>
+                            <a t-att-href="submission.get_portal_url()">
+                                <t t-esc="submission.name"/>
+                            </a>
+                        </td>
+                        
+                        <td class="text-center">
+                            <span t-field="submission.create_date" t-options="{'widget': 'date'}"/>&amp;nbsp;
+                            <span class='d-none d-md-inline' t-field="submission.create_date" t-options="{'time_only': True}"/>
+                        </td>
+
+                        <td class="text-center">
+                            <span t-field="submission.date_start" t-options="{'widget': 'date'}"/>
+                        </td>
+                        <td class="text-center">
+                            <span t-field="submission.date_end" t-options="{'widget': 'date'}"/>
+                        </td>
+
+                        <td class="text-center"></td>
+                    </tr>
+                </t>
+            </t>
+        </t>
+        
+    </template>
+
+    <template id="portal_my_price_submission_items" name="My Price Submission">
+        <t t-call="portal.portal_layout">
+
+            <div id="createNewPricelistItem" class="modal modal-attachment fade" role="form">
+                <div class="modal-dialog">
+                    <form method="POST" class="modal-content modal-content-pricelist-item js_website_submit_form new_opp_form">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <header class="modal-header modal-attachment-header">
+                            <h4 class="modal-title">Form Item Penawaran</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </header>
+
+                        <main class="modal-body modal-attachment-body" id="pricelistitem-dialog">
+                            <div class="mb-3 pricelistitem-code-field">
+                                <label class="col-form-label hdd4" for="pricelistitem_code">Vendor Product Code</label>
+                                <input type='text' name="pricelistitem_code" class="form-control title" id="pricelistitem_code" required="required"/>
+                            </div>
+                            <div class="mb-3 pricelistitem-name-field">
+                                <label class="col-form-label hdd4" for="pricelistitem_name">Vendor Product</label>
+                                <input type='text' name="pricelistitem_name" class="form-control title" id="pricelistitem_name" required="required"/>
+                            </div>
+                            <div class="mb-3 delivery-from-field">
+                                <label class="col-form-label h4dd" for="delivery_from">Shipment from</label>
+                                <select id="delivery_from" class="form-control form-control-sm" name="delivery_from">
+                                    <t t-foreach="shipmentlocs or []" t-as="ship">
+                                        <option t-att-value="ship.id">
+                                            <t t-esc="ship.name" />
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="mb-3 delivery-to-field">
+                                <label class="col-form-label h4dd" for="delivery_to">Shipment to</label>
+                                <select id="delivery_to" class="form-control form-control-sm" name="delivery_to">
+                                    <t t-foreach="shipmentlocs or []" t-as="ship">
+                                        <option t-att-value="ship.id">
+                                            <t t-esc="ship.name" />
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="mb-3 start-date-field">
+                                <label class="col-form-label h4dd" for="start_date">Start Date</label>
+                                <input type="date" class="form-control" name="start_date" id="start_date"/>
+                            </div>
+                            <div class="mb-3 end-date-field">
+                                <label class="col-form-label h4dd" for="end_date">End Date</label>
+                                <input type="date" class="form-control" name="end_date" id="end_date"/>
+                            </div>
+                            <div class="mb-3 price-field">
+                                <label class="col-form-label h4dd" for="price">Price</label>
+                                <input type='number' name="price" class="form-control title" id="price"/>
+                            </div>
+                            <div class="mb-3 shipment-capacity-field">
+                                <label class="col-form-label h4dd" for="shipment_capacity">Kapasitas Angkutan</label>
+                                <select id="shipment_capacity" class="form-control form-control-sm" name="shipment_capacity" required="required">
+                                    <t t-foreach="shipment_capacity_list or []" t-as="capacity">
+                                        <option t-att-value="capacity.id">
+                                            <t t-esc="capacity.name" />
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="mb-3 fee-type-field">
+                                <label class="col-form-label h4dd" for="fee_type">Tipe Harga</label>
+                                <select id="fee_type" class="form-control form-control-sm" name="fee_type" required="required">
+                                    <option t-att-value="per_unit">Fee per Unit</option>
+                                    <option t-att-value="range">Fee for Capacity Range</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 delay-field">
+                                <label class="col-form-label h4dd" for="delay">Lead Time (days)</label>
+                                <input type='number' name="delay" class="form-control title" id="delay"/>
+                            </div>
+                            <div class="mb-3 note-field">
+                                <label class="col-form-label hdd4" for="note">Keterangan</label>
+                                <input type='text' name="note" class="form-control title" id="note" required="required"/>
+                            </div>
+                        </main>
+                        <footer class="modal-footer modal-attachment-footer">
+                            <button type="button" class="btn btn-primary new-pricelistitem-btn">Save</button>
+                        </footer>
+                    </form>
+                </div>
+            </div>
+
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Pricelists</t>
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            </t>
+            <t t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th colspan="7">
+                            <a title="New" aria-label="New" class="btn btn-sm btn-primary btn-new-pricelistitem" role="button">
+                                <i class="fa fa-plus"/><span class='d-none d-md-inline'> New</span>
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+            </t>
+            <t t-if="not pricelists">
+                <div class="alert alert-warning mt8" role="alert">
+                    There are no pricelists.
+                </div>
+            </t>
+            <t t-if="pricelists" t-call="portal.portal_table">
+
+                <thead>
+                    <tr class="active">
+                        <th><span class='d-none d-md-inline'>Vendor Product Code</span></th>
+                        <th><span class='d-none d-md-inline'>Vendor Product</span></th>
+                        <th><span class='d-none d-md-inline'>Shipment from</span></th>
+                        <th><span class='d-none d-md-inline'>Shipment to</span></th>
+                        <th class="text-center"><span class='d-none d-md-inline'>Start Date</span></th>
+                        <th class="text-center"><span class='d-none d-md-inline'>End Date</span></th>
+                        <!-- <th class="text-center"><span class='d-none d-md-inline'>Create Date</span></th> -->
+                        <th class="text-end">Price</th>
+                        <th class="text-end">Kapasitas Angkutan</th>
+                        <th class="text-left">Tipe harga</th>
+                        <th class="text-end">Lead Time (days)</th>
+                        <th class="text-left">Keterangan</th>
+                        <th class="text-center"/>
+                    </tr>
+                </thead>
+                <t t-foreach="pricelists" t-as="pricelist">
+                    <tr>
+                        <td>
+                            <t t-esc="pricelist.product_code"/>
+                        </td>
+                        <td>
+                            <a t-att-href="pricelist.get_portal_url()">
+                                <t t-esc="pricelist.product_name"/>
+                            </a>
+                        </td>
+                        <td>
+                            <span t-field="pricelist.shipment_from_id"/>
+                        </td>
+                        <td>
+                            <span t-field="pricelist.shipment_to_id"/>
+                        </td>
+                        <td class="text-center">
+                            <span t-field="pricelist.date_start" t-options="{'widget': 'date'}"/>
+                        </td>
+                        <td class="text-center">
+                            <span t-field="pricelist.date_end" t-options="{'widget': 'date'}"/>
+                        </td>
+                        <!-- <td class="text-center">
+                            <span t-field="pricelist.create_date" t-options="{'widget': 'date'}"/>&amp;nbsp;
+                            <span class='d-none d-md-inline' t-field="pricelist.create_date" t-options="{'time_only': True}"/>
+                        </td> -->
+                        <td class="text-end">
+                            <span t-field="pricelist.price"/>
+                        </td>
+                        <td class="text-center">
+                            <span t-field="pricelist.shipment_capacity_id"/>
+                        </td>
+                        <td class="text-center">
+                            <span t-esc="pricelist.fee_type == 'range' and 'Fee for Capacity Range' or 'Fee per Unit'"/>
+                        </td>
+                        <td class="text-end">
+                            <span t-field="pricelist.delay"/>
+                        </td>
+                        <td>
+                            <span t-field="pricelist.note"/>
+                        </td>
+                        <td class="text-center">
+                            <a t-if="pricelist.state == 'draft'" title="Submit" aria-label="Submit" 
+                                class="btn btn-sm btn-primary submit-pricelistitem-btn" role="button" t-attf-href="/my/price-submission/item/update?pricelist_id={{ pricelist.id }}">
+                                <i class="fa fa-arrow-circle-right"/><span class='d-none d-md-inline'> Submit</span>
+                            </a>
+                            <span t-if="pricelist.state == 'submit'" class="badge rounded-pill text-bg-info">
+                                <i class="fa fa-fw fa-clock-o" role="img" aria-label="Pending Review" title="Pending Review"></i><span class="d-none d-md-inline"> Pending Review</span>
+                            </span>
+                            <span t-if="pricelist.state == 'reject'" class="badge rounded-pill text-bg-secondary">
+                                <i class="fa fa-fw fa-remove" role="img" aria-label="Rejected" title="Rejected"></i><span class="d-none d-md-inline"> Rejected</span>
+                            </span>
+                            <span t-if="pricelist.state == 'accepted'" class="badge rounded-pill text-bg-success">
+                                <i class="fa fa-fw fa-check" role="img" aria-label="Accepted" title="Accepted"></i><span class="d-none d-md-inline"> Accepted</span>
+                            </span>
+                        </td>
+                    </tr>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+    <template id="susanti_portal_invoice_page_custom" inherit_id="account.portal_invoice_page">
+        <xpath expr="//div[hasclass('o_download_pdf')]" position="after">
+            <div class="my_vendor_bill_screen">
+                <div>
+                    <button id="btnShowModal" style="width: 100%;" class="btn btn-primary">
+                        Add Attachments
+                    </button>
+                </div>
+                <div style="margin-top: 5px;width: 100%;">
+                    <button id="btnShowReceipt" class="btn btn-secondary" style="width: 100%;" t-att-value="invoice.id">
+                        Show Your Attachments
+                    </button>
+                </div>
+                <div id="updated_receipt" style="width:100%;display:none">
+                    <p style="text-align: end;">
+                        <i class="fa fa-refresh" id="refresh_receipt" t-att-value="invoice.id"/>
+                    </p>
+                    <div id="showing_updated_receipt" style="width:100%;"/>
+                </div>
+
+                <div id="myModal" class="modal modal-attachment">
+                    <div class="modal-content modal-content-upload-attachment">
+                        <div class="modal-header modal-attachment-header">
+                            <h5>Upload Your Attachments</h5>
+                            <span class="close_modal">
+                                <i class="fa fa-times-circle"/>
+                            </span>
+                        </div>
+                        <div class="modal-body modal-attachment-body">
+                            <p>You can attach the required files.</p>
+                        </div>
+                        <div class="modal-footer modal-attachment-footer">
+                            <input type="file" name="file" id="payment_proof" multiple="true"
+                                   data-show-upload="true" data-show-caption="true"
+                                   accept="image/png,image/jpeg,application/pdf"/>
+                            <button id="payment_proof_update"  t-att-value="invoice.id">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

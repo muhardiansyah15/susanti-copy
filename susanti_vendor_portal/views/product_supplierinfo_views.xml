@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="product_supplierinfo_search_view_inherit" model="ir.ui.view">
+        <field name="name">product.supplierinfo.search.view.inherit</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="inherit_id" ref="product.product_supplierinfo_search_view"/>
+        <field name="arch" type="xml">
+            <filter name="active_products" position="attributes">
+                <attribute name="domain">['|', '&amp;', ('product_tmpl_id.active', '=', True), ('state', '!=', 'draft'), '&amp;', ('product_id.active', '=', True), ('state', '!=', 'draft')]</attribute>
+            </filter>
+        </field>
+    </record>
+
+
+    <record id="product_supplierinfo_tree_view_inherit" model="ir.ui.view">
+        <field name="name">product.supplierinfo.search.view.inherit</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="inherit_id" ref="product.product_supplierinfo_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="before">
+                <field name="product_code"/>
+            </field>
+            <field name="product_tmpl_id" position="after">
+                <field name="shipment_from_id"/>
+                <field name="shipment_to_id"/>
+            </field>
+        </field>
+    </record>
+
+
+    
+
+    <record id="product_supplierinfo_form_view_bion_inherite" model="ir.ui.view">
+        <field name="name">product.supplierinfo.form.inehrit</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_reject" string="Reject" attrs="{'invisible': [('state', '=', 'reject')]}" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submit,accepted" options="{'clickable': '1', 'fold_field': 'fold'}"/>
+                </header>
+            </xpath>
+            <field name="product_code" position="after">
+                <field name="shipment_from_id"/>
+                <field name="shipment_to_id"/>
+                <field name="shipment_capacity_id"/>
+                <field name="fee_type" widget="radio"/>
+                <field name="note" string="Note" placeholder="Can be filled with Truck Type"/>
+            </field>
+        </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="view_shipment_location_tree">
+        <field name="name">shipment.location.tree</field>
+        <field name="model">shipment.location</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="code" required="0"/>
+                <field name="name" required="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_shipment_location" model="ir.actions.act_window">
+        <field name="name">Shipment Locations</field>
+        <field name="res_model">shipment.location</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem
+            id="bion_shipment_location_menu"
+            name="Shipment Location"
+            parent="susanti_vendor_portal.bion_vendor_portal_config_menu"
+            action="susanti_vendor_portal.action_shipment_location"
+            sequence="1"/>
+    
+
+
+</odoo>

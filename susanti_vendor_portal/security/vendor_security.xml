@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="vendor_pricelist_rule_portal" model="ir.rule">
+        <field name="name">Vendor Pricelist: portal users: can only see his own pricelists</field>
+        <field name="model_id" ref="product.model_product_supplierinfo"/>
+        <field name="domain_force">[
+            ('partner_id', '=', user.partner_id.id),
+        ]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+
+    <record id="vendor_pricelist_submission_rule_portal" model="ir.rule">
+        <field name="name">Vendor Pricelist Submission: portal users: can only see his own pricelists</field>
+        <field name="model_id" ref="susanti_vendor_portal.model_vendor_pricelist_submission"/>
+        <field name="domain_force">[
+            ('create_uid', '=', user.id),
+        ]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+
+    <menuitem id="sale_delivery_menu"  name="Delivery" parent="sale.sale_menu_root" sequence="15"/>
+</odoo>
